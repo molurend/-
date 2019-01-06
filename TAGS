@@ -1,0 +1,253 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.*;
+public class JM extends JFrame
+{
+JMenuBar mb=new JMenuBar();  //定义一个菜单项
+/******定义各个菜单及其菜单项******/
+JMenu m1=new JMenu("文件(F)");
+JMenuItem n=new JMenuItem("新建");
+JMenuItem open=new JMenuItem("打开(O)... Ctrl+O");
+JMenuItem save=new JMenuItem("保存(S)... Ctrl+S");
+JMenuItem save_as=new JMenuItem("另存为(A)...Ctrl+A");
+JMenuItem exit=new JMenuItem("退出");
+JMenu m2=new JMenu("编辑(E)");
+JMenuItem copy=new JMenuItem("复制(C) Ctrl+C");
+JMenuItem cut=new JMenuItem("剪切(X) Ctrl+X");   
+JMenuItem paste=new JMenuItem("粘贴(P) Ctrl+P");
+JMenu m3=new JMenu("格式(O)");
+JMenu f1=new JMenu("字体(F)");
+JMenuItem i11=new JMenuItem("宋体");
+JMenuItem i12=new JMenuItem("楷体");
+JMenuItem i13=new JMenuItem("黑体");
+JMenu color=new JMenu("颜色(C)");
+JMenuItem i21=new JMenuItem("红");
+JMenuItem i22=new JMenuItem("蓝");
+JMenuItem i23=new JMenuItem("绿");
+JMenu m4=new JMenu("帮助(Ｈ)");
+JMenuItem about=new JMenuItem("关于");
+/*****定义弹出菜单及其菜单项*****/
+JPopupMenu pm=new JPopupMenu();
+JMenuItem item1=new JMenuItem("复制");
+JMenuItem item2=new JMenuItem("剪切");
+JMenuItem item3=new JMenuItem("粘贴");
+/***********编辑区**********/
+String s;
+Container c;
+JTextArea editor=new JTextArea(s);
+Font t=new Font("sanserif",Font.PLAIN,12);
+JM()
+{
+super("记事本");
+setSize(500,400);
+try{UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());}
+catch(Exception e){System.err.println("不能设置外观的原因；"+e);}
+c = getContentPane();
+c.add(new JScrollPane(editor));
+addFileMenu();
+addEditMenu();
+addFormMenu();
+addHelpMenu();
+addJMenuBar();
+addJPopupMenu();
+setJMenuBar(mb);
+setVisible(true);
+setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+}
+private void addFileMenu()
+{
+m1.add(n);
+m1.add(open);
+m1.add(save);
+m1.add(save_as);
+m1.addSeparator();
+m1.add(exit);
+m1.setFont(t);
+}
+private void addEditMenu()
+{
+m2.add(copy);
+m2.add(cut);
+m2.addSeparator();
+m2.add(paste);
+m2.setFont(t);
+}
+private void addFormMenu()
+{
+m3.add(f1);
+m3.add(color);
+m3.setFont(t);
+f1.add(i11);
+f1.add(i12);
+f1.add(i13);
+color.add(i21);
+color.add(i22);
+color.add(i23);
+}
+private void addHelpMenu()
+{
+m4.add(about);
+m4.setFont(t);
+}
+private void addJMenuBar()
+{
+mb.add(m1);
+mb.add(m2);
+mb.add(m3);
+mb.add(m4);
+mb.setBackground(Color.cyan);
+}
+private void addJPopupMenu()
+{
+editor.add(pm);
+pm.add(item1);
+pm.add(item2);
+pm.add(item3);
+}
+public static void main(String arg[]){new JM();}
+}
+import java.io.*;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.Font.*;
+public class JM4 extends JM implements ActionListener,MouseListener
+{
+int flag=0;
+public JM4()
+{
+/**********监听器接口**********/
+n.addActionListener(this);
+open.addActionListener(this);
+save.addActionListener(this);
+save_as.addActionListener(this);
+exit.addActionListener(this);
+copy.addActionListener(this);
+cut.addActionListener(this);
+paste.addActionListener(this);
+i11.addActionListener(this);
+i12.addActionListener(this);
+i13.addActionListener(this);
+i21.addActionListener(this);
+i22.addActionListener(this);
+i23.addActionListener(this);
+about.addActionListener(this);
+item1.addActionListener(this);
+item2.addActionListener(this);
+item3.addActionListener(this);
+editor.addMouseListener(this);
+addWindowListener(new windowListener());
+/***************编辑区键盘事件******************/
+editor.addKeyListener( new KeyAdapter()
+{public void keyTyped(KeyEvent e){flag=1;}});
+}
+/**************窗口监听器**************/
+class windowListener extends WindowAdapter
+{                         
+public void windowClosing(WindowEvent e)
+{ 
+if(flag==0)System.exit(0);
+else  close();
+}
+}   
+/***************菜单项监听器****************/
+public void actionPerformed(ActionEvent e)
+{
+Font f2=editor.getFont();
+JMenuItem mi=(JMenuItem) e.getSource();
+if(mi==n)                        //新建
+{ 
+if(flag==0) editor.setText("");
+else close2();             
+}
+if(mi==open)                    //打开
+{loadFile();}
+if(mi==save||mi==save_as)        //保存和另存为
+{saveFile();}
+if(mi==exit)                        //退出
+{if(flag==0)System.exit(0); close();}
+if(mi==copy)                      //复制
+{editor.copy();}
+if(mi==cut)                        //剪切
+{editor.cut();}
+if(mi==paste)                      //粘贴
+{editor.paste();}
+if(mi==i11)                        //字体设置
+{editor.setFont(new java.awt.Font("宋体",java.awt.Font.PLAIN,f2.getSize()));}
+if(mi==i12)
+{editor.setFont(new java.awt.Font("楷体",java.awt.Font.PLAIN,f2.getSize()));}
+if(mi==i13)
+{editor.setFont(new java.awt.Font("黑体",java.awt.Font.PLAIN,f2.getSize()));}
+if(mi==i21)                    //字体颜色
+{ editor.setForeground(Color.red); }
+if(mi==i22)
+{editor.setForeground(Color.blue);}
+if(mi==i23)
+{editor.setForeground(Color.green);}
+if(mi==about)                  //帮助菜单的关于
+{
+String message = "----记事本----"
++"感谢您的使用!";
+JOptionPane.showMessageDialog(JM4.this, message, "关于...",JOptionPane.PLAIN_MESSAGE);
+}
+/******弹出菜单********/   
+if(mi==item1)                //复制 
+{editor.copy();}
+if(mi==item2)              //剪切
+{editor.cut();}
+if(mi==item3)            //粘贴
+{editor.paste();}
+}
+/**********将文件读入到编辑区***********/
+void loadFile()
+{
+JFileChooser fc=new JFileChooser();
+int r=fc.showOpenDialog(this);
+if(r==JFileChooser.APPROVE_OPTION)
+{
+File file=fc.getSelectedFile();
+try{editor.read(new FileReader(file),null);}
+catch(IOException e){}
+}
+}
+/***********创建文件写入器*************/
+void saveFile()
+{
+JFileChooser fc=new JFileChooser();
+int r=fc.showSaveDialog(this);
+if(r==JFileChooser.APPROVE_OPTION)
+{
+File file=fc.getSelectedFile();
+try{editor.write(new FileWriter(file));}
+catch(IOException e){}
+}
+}
+/*********文件的关闭或退出************/
+void close(){                       
+try{ int option = JOptionPane.showConfirmDialog( null, "是否保存文件？", "保存文件？",
+JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE, null);
+switch(option) {
+case JOptionPane.YES_OPTION:saveFile();break;
+case JOptionPane.NO_OPTION:System.exit(0);break;
+case JOptionPane.CANCEL_OPTION: return ; }}
+catch(Exception e){e.printStackTrace();}}
+void close2(){                         
+try{int option = JOptionPane.showConfirmDialog( null, "是否保存已有文件？", "保存文件？",
+JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE, null);
+switch(option) {
+case JOptionPane.YES_OPTION:saveFile();editor.setText("");break;
+case JOptionPane.NO_OPTION:editor.setText("");return;}}
+catch(Exception e){e.printStackTrace();}}
+/******编辑区的鼠标事件*********/
+public void mouseReleased(MouseEvent e)
+{
+if(e.isPopupTrigger())
+pm.show(editor,e.getX(),e.getY());
+}
+public void mouseClicked(MouseEvent e){}
+public void mouseEntered(MouseEvent e){}
+public void mouseExited(MouseEvent e){}
+public void mousePressed(MouseEvent e){}
+public static void main (String[] args) {  JM4 d=new JM4();}
+}
